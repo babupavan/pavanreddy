@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     triggers {
-        cron('37,41 06 * * *')  // Trigger at 12:07 PM and 12:11 PM
+        cron('26,29 12 * * *')  // Trigger at 12:07 PM and 12:11 PM
     }
 
     environment {
@@ -21,14 +21,14 @@ pipeline {
 
                     // Use the credentials stored in Jenkins for AWS access
                     withCredentials([aws(credentialsId: 'aws-credentials')]) {
-                        if (currentTime == "06:37") {
+                        if (currentTime == "12:26") {
                             echo "Starting EC2 instance with ID $instanceId..."
                             sh """
                                 aws ec2 start-instances --instance-ids ${instanceId}
                                 aws ec2 wait instance-running --instance-ids ${instanceId}
                                 echo "EC2 instance started."
                             """
-                        } else if (currentTime == "06:41") {
+                        } else if (currentTime == "12:29") {
                             echo "Stopping EC2 instance with ID $instanceId..."
                             sh """
                                 aws ec2 stop-instances --instance-ids ${instanceId}
