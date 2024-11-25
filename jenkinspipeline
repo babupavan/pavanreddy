@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     triggers {
-        cron('06,09 09 * * *')  
+        cron('26,29 09 * * *')  
     }
 
     environment {
@@ -17,7 +17,7 @@ pipeline {
                     def currentTime = new Date().format("HH:mm", TimeZone.getTimeZone("Asia/Kolkata"))
                     echo "Current time in IST: $currentTime"
                     withCredentials([aws(credentialsId: 'aws-credentials')]) {
-                        if (currentTime == "14:51") {
+                        if (currentTime == "14:55") {
                             echo "Starting EC2 instance with ID $INSTANCEID..."
                             sh """
                                 aws ec2 start-instances --instance-ids ${INSTANCEID}
@@ -25,7 +25,7 @@ pipeline {
                                 echo "EC2 instance started."
                             """
                         }
-                        else if (currentTime == "14:53") {
+                        else if (currentTime == "14:58") {
                             echo "Stopping EC2 instance with ID $INSTANCEID..."
                             sh """
                                 aws ec2 stop-instances --instance-ids ${INSTANCEID}
