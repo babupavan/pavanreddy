@@ -20,9 +20,6 @@ pipeline {
                     def currentTime = new Date().format("HH:mm", TimeZone.getTimeZone("Asia/Kolkata"))
                     echo "Current time in IST: $currentTime"
 
-                    // Debug: Log the INSTANCEID to make sure it's being retrieved properly
-                    echo "Instance ID: $INSTANCEID"
-
                     // Use the credentials stored in Jenkins for AWS access
                     withCredentials([aws(credentialsId: 'aws-credentials')]) {
                         // Start EC2 instance at 14:36 IST (09:06 UTC)
