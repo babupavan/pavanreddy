@@ -1,0 +1,44 @@
+pipeline {
+    agent any
+
+    triggers {
+        cron('7,11 12 * * *')  // Trigger at 12:07 PM and 12:11 PM
+    }
+
+    environment {
+        AWS_DEFAULT_REGION = 'ap-south-1'
+    }
+
+    stages {
+        stage('Start/Stop EC2 Instance') {
+            steps {
+                script {
+                    def instanceId = 'i-02739bb99499c5107'
+                    def currentTime = new Date().format("HH:mm")
+                    echo "Current time: $currentTime"
+
+                    // Use the credentials stored in Jenkins
+                    withCredentials([aws(credentialsId: 'aws-credentials')]) {
+                        if (currentTime == "12:07") {
+                            echo "Starting EC2 instance with ID $instanceId..."
+                            sh """
+                                aws ec2 start-instances --instance-ids ${instanceId}
+                                aws ec2 wait instance-running --instance-ids ${instanceId}
+                                echo "EC2 instance started."
+                            """
+                        } else if (currentTime == "12:11") {
+                            echo "Stopping EC2 instance with ID $instanceId..."
+                            sh """
+                                aws ec2 stop-instances --instance-ids ${instanceId}
+                                aws ec2 wait instance-stopped --instance-ids ${instanceId}
+                                echo "EC2 instance stopped."
+                            """
+                        } else {
+                            echo "No action required at this time."
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
