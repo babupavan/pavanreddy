@@ -2,37 +2,37 @@ pipeline {
     agent any
 
     triggers {
-        cron('0,3 07 * * *')  // Trigger at 12:07 PM and 12:11 PM
+        cron('34,37 12 * * *')  // Trigger at 12:34 PM and 12:37 PM IST
     }
 
     environment {
         AWS_DEFAULT_REGION = 'ap-south-1'
-        TZ = 'Asia/Kolkata'
-        INSTANCEID = credentials('INSTANCEID')  // Retrieve the INSTANCEID secret
+        TZ = 'Asia/Kolkata'  // Set timezone to IST (Indian Standard Time)
+        INSTANCEID = credentials('INSTANCEID')  // Retrieve the INSTANCEID secret from Jenkins credentials
     }
 
     stages {
         stage('Start/Stop EC2 Instance') {
             steps {
                 script {
-                    def instanceId = INSTANCEID // Use the secret here
-                    def currentTime = new Date().format("HH:mm")
+                    // Retrieve the current time in Kolkata time zone (Asia/Kolkata)
+                    def currentTime = new Date().format("HH:mm", TimeZone.getTimeZone("Asia/Kolkata"))
                     echo "Current time: $currentTime"
 
                     // Use the credentials stored in Jenkins for AWS access
                     withCredentials([aws(credentialsId: 'aws-credentials')]) {
-                        if (currentTime == "07:00") {
-                            echo "Starting EC2 instance with ID $instanceId..."
+                        if (currentTime == "12:34") {
+                            echo "Starting EC2 instance with ID $INSTANCEID..."
                             sh """
-                                aws ec2 start-instances --instance-ids ${instanceId}
-                                aws ec2 wait instance-running --instance-ids ${instanceId}
+                                aws ec2 start-instances --instance-ids ${INSTANCEID}
+                                aws ec2 wait instance-running --instance-ids ${INSTANCEID}
                                 echo "EC2 instance started."
                             """
-                        } else if (currentTime == "07:03") {
-                            echo "Stopping EC2 instance with ID $instanceId..."
+                        } else if (currentTime == "12:37") {
+                            echo "Stopping EC2 instance with ID $INSTANCEID..."
                             sh """
-                                aws ec2 stop-instances --instance-ids ${instanceId}
-                                aws ec2 wait instance-stopped --instance-ids ${instanceId}
+                                aws ec2 stop-instances --instance-ids ${INSTANCEID}
+                                aws ec2 wait instance-stopped --instance-ids ${INSTANCEID}
                                 echo "EC2 instance stopped."
                             """
                         } else {
