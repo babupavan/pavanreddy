@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    triggers {
+        // Trigger at 09:06 and 09:09 UTC (which corresponds to 14:36 and 14:39 IST)
+        cron('06,09 09 * * *')  // Trigger at 09:06 and 09:09 UTC
+    }
+
     environment {
         AWS_DEFAULT_REGION = 'ap-south-1'
         TZ = 'Asia/Kolkata'  // Set timezone to IST (Indian Standard Time)
@@ -18,7 +23,7 @@ pipeline {
                     // Use the credentials stored in Jenkins for AWS access
                     withCredentials([aws(credentialsId: 'aws-credentials')]) {
                         // Start EC2 instance at 14:36 IST (09:06 UTC)
-                        if (currentTime == "14:45") {
+                        if (currentTime == "14:36") {
                             echo "Starting EC2 instance with ID $INSTANCEID..."
                             sh """
                                 aws ec2 start-instances --instance-ids ${INSTANCEID}
@@ -27,7 +32,7 @@ pipeline {
                             """
                         }
                         // Stop EC2 instance at 14:39 IST (09:09 UTC)
-                        else if (currentTime == "14:48") {
+                        else if (currentTime == "14:39") {
                             echo "Stopping EC2 instance with ID $INSTANCEID..."
                             sh """
                                 aws ec2 stop-instances --instance-ids ${INSTANCEID}
