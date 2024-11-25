@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    triggers {
-        // Trigger at 09:06 and 09:09 UTC (which corresponds to 14:36 and 14:39 IST)
-        cron('06,09 09 * * *')  // Trigger at 09:06 and 09:09 UTC
-    }
-
     environment {
         AWS_DEFAULT_REGION = 'ap-south-1'
         TZ = 'Asia/Kolkata'  // Set timezone to IST (Indian Standard Time)
